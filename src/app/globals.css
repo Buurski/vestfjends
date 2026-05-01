@@ -1,0 +1,163 @@
+@import "tailwindcss";
+
+/* ─── Design tokens ─────────────────────────────────────────────── */
+:root {
+  /* Navy scale — committed color strategy, ~40-50% of surface */
+  --navy:        oklch(22% 0.042 248);
+  --navy-light:  oklch(28% 0.038 248);
+  --navy-border: oklch(32% 0.032 248);
+
+  /* Off-white surfaces — tinted toward navy hue */
+  --surface:     oklch(97.5% 0.006 248);
+  --surface-alt: oklch(94.5% 0.009 248);
+
+  /* Text */
+  --text-primary: oklch(18% 0.020 248);
+  --text-muted:   oklch(44% 0.018 248);
+  --text-on-dark: oklch(94% 0.006 248);
+  --text-on-dark-muted: oklch(72% 0.012 248);
+
+  /* Amber accent — CTAs and phone number emphasis */
+  --amber:       oklch(74% 0.175 64);
+  --amber-hover: oklch(66% 0.175 64);
+  --amber-dark:  oklch(58% 0.160 64);
+
+  /* Borders */
+  --border:      oklch(88% 0.010 248);
+  --border-dark: oklch(33% 0.030 248);
+}
+
+@theme inline {
+  --color-navy:               var(--navy);
+  --color-navy-light:         var(--navy-light);
+  --color-navy-border:        var(--navy-border);
+  --color-surface:            var(--surface);
+  --color-surface-alt:        var(--surface-alt);
+  --color-text-primary:       var(--text-primary);
+  --color-text-muted:         var(--text-muted);
+  --color-text-on-dark:       var(--text-on-dark);
+  --color-text-on-dark-muted: var(--text-on-dark-muted);
+  --color-amber:              var(--amber);
+  --color-amber-hover:        var(--amber-hover);
+  --color-amber-dark:         var(--amber-dark);
+  --color-border:             var(--border);
+  --color-border-dark:        var(--border-dark);
+
+  --font-sans: var(--font-barlow);
+  --font-display: var(--font-barlow-condensed);
+}
+
+/* ─── Base ──────────────────────────────────────────────────────── */
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+  font-optical-sizing: auto;
+}
+
+body {
+  background-color: var(--surface);
+  color: var(--text-primary);
+  font-size: 1rem;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+h1, h2, h3, h4 {
+  text-wrap: balance;
+  line-height: 1.15;
+}
+
+p {
+  text-wrap: pretty;
+  max-width: 68ch;
+}
+
+/* ─── Focus ─────────────────────────────────────────────────────── */
+:focus-visible {
+  outline: 2px solid var(--amber);
+  outline-offset: 3px;
+  border-radius: 2px;
+}
+
+/* ─── Animations ─────────────────────────────────────────────────── */
+@keyframes fade-up {
+  from { opacity: 0; transform: translateY(24px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes fade-in {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+@keyframes pop-in {
+  from { opacity: 0; transform: scale(0.88); }
+  to   { opacity: 1; transform: scale(1); }
+}
+
+/* Hero entrance — staggered on page load */
+.hero-enter > * {
+  opacity: 0;
+  animation: fade-up 0.72s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+.hero-enter > *:nth-child(1) { animation-delay: 0.06s; }
+.hero-enter > *:nth-child(2) { animation-delay: 0.20s; }
+.hero-enter > *:nth-child(3) { animation-delay: 0.36s; }
+.hero-enter > *:nth-child(4) { animation-delay: 0.52s; }
+.hero-enter > *:nth-child(5) { animation-delay: 0.64s; }
+
+/* Scroll-driven reveal — progressive enhancement */
+@supports (animation-timeline: view()) {
+  .reveal {
+    animation: fade-up 0.6s cubic-bezier(0.16, 1, 0.3, 1) both;
+    animation-timeline: view();
+    animation-range: entry 0% entry 38%;
+  }
+
+  .reveal-fade {
+    animation: fade-in 0.7s cubic-bezier(0.16, 1, 0.3, 1) both;
+    animation-timeline: view();
+    animation-range: entry 0% entry 40%;
+  }
+}
+
+/* ─── IntersectionObserver reveal ───────────────────────────────── */
+.io-reveal {
+  opacity: 0;
+  transform: scale(0.93) translateY(18px);
+  transition:
+    opacity 0.55s cubic-bezier(0.16, 1, 0.3, 1),
+    transform 0.55s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.io-reveal.io-visible {
+  opacity: 1;
+  transform: scale(1) translateY(0);
+}
+
+/* ─── Video parallax ─────────────────────────────────────────────── */
+@keyframes video-parallax {
+  from { transform: translateY(0); }
+  to   { transform: translateY(-14%); }
+}
+
+@supports (animation-timeline: view()) {
+  .video-parallax {
+    animation: video-parallax linear both;
+    animation-timeline: view();
+    animation-range: entry 0% exit 100%;
+  }
+}
+
+/* ─── Reduced motion ─────────────────────────────────────────────── */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+  /* Reset hero-enter opacity so content is visible */
+  .hero-enter > * { opacity: 1; }
+}
